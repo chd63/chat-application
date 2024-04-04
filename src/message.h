@@ -24,4 +24,8 @@ typedef struct message_struct
     Note note;
    } Message;
 
+
+// Prototypes
+void setNoteType( Message note );
+
 #endif

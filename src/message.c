@@ -5,13 +5,40 @@
 // have code in place that handles messages, like sending and receiving them. Again, this code 
 // needs to be OUTLINED.
 
-
-int commandTranslate( Message note )
+// Function that accepts a Note and sets its Type
+void setNoteType( Message note )
    {
-    // create int variable
-    int translation;
+    // cast the note inside to an int
+    // to read the TYPE it is
+    switch( (int)note.note )
+      {
+       case JOIN:
+       note.type = JOIN;
+         break;
 
-    // 
+       case LEAVE:
+       note.type = LEAVE;
+         break;
 
-    return 0;
+       case SHUTDOWN:
+       note.type = SHUTDOWN;
+         break;
+
+       case SHUTDOWN_ALL:
+       note.type = SHUTDOWN_ALL;
+         break;
+
+       case JOINING:
+       note.type = JOINING;
+         break;
+
+       case LEFT:
+       note.type = LEFT;
+         break;
+       
+       // Otherwise, assume it is a generic NOTE
+       default:
+       note.type = NOTE;
+
+      }
    }
