@@ -5,3 +5,16 @@
 // function in place that is being executed when the server connects in the server 
 // loop. You need to put a big switch statement into this latter function with entry 
 // points for the different kinds of messages that can be received from the server.
+
+
+// server loop function called receiveThread gets a Proprties pointer passed in
+
+    // server loop
+
+
+
+// server connecting function (called in server loop)
+
+    // switch statment 
+
+    // CASE 1: 

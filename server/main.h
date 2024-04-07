@@ -16,6 +16,7 @@
 #include <sys/stat.h>
 
 #include "properties.h"
+#include "client_handler.h"
 
 #define SERVER_ADDRESS "23.254.211.151"   // the server IP
 #define PORT 2510                         // randomly decided port
