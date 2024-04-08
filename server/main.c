@@ -40,6 +40,9 @@ int main()
        perror("Error listening on socket");
        exit(EXIT_FAILURE);
       }
+    
+    // get the information from properties
+    
 
     // THE SERVER LOOP
     while ( TRUE )
