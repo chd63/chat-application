@@ -22,10 +22,10 @@ int main()
     serverAddress.sin_family = AF_INET;    
 
     // accept clients on any interface
-    serverAddress.sin_addr.s_addr = htonl(INADDR_ANY)
+    serverAddress.sin_addr.s_addr = htonl(INADDR_ANY);
 
     // set port to listen on
-    serverAddress.sin_port = htons(PORT)
+    serverAddress.sin_port = htons(PORT);
 
     // binding the socket to port
     if (bind( serverSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress) ) != 0)
@@ -40,6 +40,9 @@ int main()
        perror("Error listening on socket");
        exit(EXIT_FAILURE);
       }
+    
+    // get the information from properties
+    
 
     // THE SERVER LOOP
     while ( TRUE )
