@@ -8,6 +8,8 @@ int main()
     int serverSocket;
     struct sockaddr_in serverAddress;
 
+    // create pointer to name for property file
+    char* propertyFile = "test.properties";
 
     // Create unnamed network socket for server to listen on
     if( (serverSocket = socket(AF_INET, SOCK_STREAM, 0)) == -1 )
@@ -16,16 +18,20 @@ int main()
        exit(EXIT_FAILURE);
       }
 
+    // get the properties
+    Properties* properties = property_read_properties(propertyFile);
+
     // bind the socket
 
     // accept IP addresses
     serverAddress.sin_family = AF_INET;    
 
     // accept clients on any interface
+    
     serverAddress.sin_addr.s_addr = htonl(INADDR_ANY);
 
     // set port to listen on
-    serverAddress.sin_port = htons(PORT);
+    serverAddress.sin_port = htons(atoi(property_get_property(properties, "serverPort")));
 
     // binding the socket to port
     if (bind( serverSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress) ) != 0)
