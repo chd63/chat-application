@@ -27,8 +27,10 @@ int main()
     serverAddress.sin_family = AF_INET;    
 
     // accept clients on any interface
-    
     serverAddress.sin_addr.s_addr = htonl(INADDR_ANY);
+
+    // uncomment when error checking
+    printf("IP address: %s\n", inet_ntoa(serverAddress.sin_addr));
 
     // set port to listen on
     serverAddress.sin_port = htons(atoi(property_get_property(properties, "serverPort")));
@@ -48,11 +50,14 @@ int main()
       }
     
     // get the information from properties
+
+
     
 
     // THE SERVER LOOP
     while ( TRUE )
       {
+       //printf("Server is running and waiting for connections...\n");
        // accept connection to client
        int clientSocket = accept( serverSocket, NULL, NULL );
        printf("\nServer with PID %d: accepted client\n", getpid());

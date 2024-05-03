@@ -1,6 +1,11 @@
 {
     "files.associations": {
         "stdbool.h": "c",
-        "client_handler.h": "c"
+        "client_handler.h": "c",
+        "properties.h": "c",
+        "fcntl.h": "c",
+        "message.h": "c",
+        "stdio.h": "c",
+        "reciever_handler.h": "c"
     }
 }

@@ -10,7 +10,7 @@ void setNoteType( Message note )
    {
     // cast the note inside to an int
     // to read the TYPE it is
-    switch( (int)note.note )
+    switch( (int)note.type )
       {
        case JOIN:
        note.type = JOIN;

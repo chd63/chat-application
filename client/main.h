@@ -15,7 +15,12 @@
 #include <pthread.h>
 #include <sys/stat.h>
 
-#include "properties.h"
+#include "src/properties.h"
+#include "src/message.h"
+#include "reciever_handler.h"
+#include "sender_handler.h"
+#include "src/message.h"
+
 
 
 #define SERVER_ADDRESS "23.254.211.151"   // the server IP
