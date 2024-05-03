@@ -15,13 +15,14 @@
 #include <pthread.h>
 #include <sys/stat.h>
 
-#include "properties.h"
+#include "src/properties.h"
 #include "client_handler.h"
+#include "src/message.h"
 
 #define SERVER_ADDRESS "23.254.211.151"   // the server IP
 #define PORT 2510                         // randomly decided port
 
 #define FALSE 0
-#define TRUE !FALSE
+#define TRUE 1
 
 #define MAX_CONNECTIONS 10

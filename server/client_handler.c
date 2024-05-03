@@ -1,5 +1,4 @@
-#include "client_handler.h"
-#include "message.h"
+#include "main.h"
 
 // switch statement for COMMANDS
 
@@ -8,8 +7,14 @@
 // (don't put that code into main.c). This function needs to have a big switch statement, 
 // its entry points pertain to the different kinds of messages a server may receive from a client.
 
-void talkToClient( clientSocket )
+void *talkToClient(void  *arg )
    {
+    int clientSocket = *(int *)arg;
+
+    printf("we are talking to client \n");
+
+
+    /*
     
 
     switch( message.type )
@@ -44,4 +49,5 @@ void talkToClient( clientSocket )
             }
          }
       }
+      */
    }

@@ -22,11 +22,11 @@ typedef struct chat_node_list_element_struct
    } ChatNodeListElement;
 
 // ChatNode List
-typedef struct chat_node_list_element_struct
+typedef struct chat_node_list_struct
    {
     ChatNodeListElement* first;
     ChatNodeListElement* last;
-   } ChatNodeList;
+   } ChatNodes;
 
 
 

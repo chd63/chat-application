@@ -6,7 +6,8 @@
 // different commands or a note the user put in.
 
 // user input loop function
-
+void *sendThread(void  *arg )
+   {
     // here we have a loop
 
         // we are waiting for user input
@@ -33,6 +34,7 @@
         // CASE 4: SHUTDOWN ALL
             // send struct with SHUTDOWN ALL
             // client will be taken care of by responce
+   }
 
 
 // checker function for join

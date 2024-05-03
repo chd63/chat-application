@@ -6,14 +6,19 @@
 // loop. You need to put a big switch statement into this latter function with entry 
 // points for the different kinds of messages that can be received from the server.
 
-
 // server loop function called receiveThread gets a Proprties pointer passed in
 
+void *receiveThread(void  *arg )
+   {
+    
+    
     // server loop
      
         // will wait for a responce from the server
 
         // will call the server connecting function(switch statment function)
+
+   }
 
 
 
