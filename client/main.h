@@ -14,6 +14,7 @@
 #include <syslog.h>
 #include <pthread.h>
 #include <sys/stat.h>
+#include <string.h>
 
 #include "src/properties.h"
 #include "src/message.h"
@@ -25,6 +26,8 @@
 
 #define SERVER_ADDRESS "23.254.211.151"   // the server IP
 #define PORT 2510                         // randomly decided port
+
+#define NOTE_LENGTH 64  
 
 #define FALSE 0
 #define TRUE !FALSE
