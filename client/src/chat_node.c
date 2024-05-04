@@ -4,3 +4,6 @@
 // and logical name. You will also want to foresee functionality that acts upon chat nodes. One 
 // important example is to have code in place that implements linked lists for chat nodes. This 
 // code needs to be OUTLINED.
+
+
+// have code here that will implement the linked list
