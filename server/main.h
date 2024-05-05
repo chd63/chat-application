@@ -1,3 +1,4 @@
+
 // includes taken from Wolf Dieter Otte
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,6 +19,7 @@
 #include "src/properties.h"
 #include "client_handler.h"
 #include "src/message.h"
+#include "src/chat_node.h"
 
 #define SERVER_ADDRESS "23.254.211.151"   // the server IP
 #define PORT 2510                         // randomly decided port
@@ -25,4 +27,6 @@
 #define FALSE 0
 #define TRUE 1
 
+
 #define MAX_CONNECTIONS 10
+
