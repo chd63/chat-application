@@ -17,6 +17,9 @@ what type of message is sent
 // user input loop function
 void *sendThread(void  *arg )
    {  
+    // flag for join
+    int flag = 0;
+
     Properties *headPtr = (Properties *)arg;
 
     // make sure that we have the server and the port
@@ -111,10 +114,6 @@ void *sendThread(void  *arg )
         sendMessage.chat_node = message;
 
 
-        // prepare connection for tcp
-
-        
-
 
         //once we get user input we go to a switch statment
 
@@ -124,15 +123,34 @@ void *sendThread(void  *arg )
             //         call checker function for join
             //         we are going to send a note to the server
             case NOTE:
+                if(flag == 1)
+                   {
+                    // send the note 
+                    sendAMessage(sendMessage,server_address, server_port);
+
+                   }
+                else
+                   {
+                    printf("ERROR: YOU HAVE NOT JOINED THE SERVER YET\n"); 
+                   }
                 
                 break;
 
             // CASE 2: JOIN
             //         we will send a struct with a join to the server
             case JOIN:
-                printf("just want to make sure this is working\n");
 
-                // send a message with a join reqest
+                if(flag == 0)
+                   {
+                    // we will join
+                    sendAMessage(sendMessage,server_address, server_port);
+
+                    flag = 1;
+                   }
+                else
+                   {
+                    printf("ERROR: YOU HAVE ALREADY JOINED THE SERVER\n"); 
+                   }
 
                 
                 break;
@@ -141,40 +159,67 @@ void *sendThread(void  *arg )
             //         call checker function for join
             //         send a struct with a leave to the server
             case LEAVE:
+
+                if(flag == 1)
+                   {
+                    // leave the server
+                    sendAMessage(sendMessage,server_address, server_port);
+                   }
+                else
+                   {
+                    printf("ERROR: YOU HAVE NOTE YET JOINED THE SERVER\n"); 
+                   }
                 break;
+
             // CASE 4: SHUTDOWN
             //         call checker function for join
             //         send a struct with a leave
             //         shutdown the client
             case SHUTDOWN:
+                if(flag == 1)
+                   {
+                    // leave the server
+                    sendAMessage(sendMessage,server_address, server_port);
+
+                    // make sure to shutdown the application
+                    return 0;
+
+                   }
+                else
+                   {
+                    printf("ERROR: YOU HAVE NOTE YET JOINED THE SERVER\n"); 
+                   }
                 break;
             // CASE 4: SHUTDOWN ALL
             //         send struct with SHUTDOWN ALL
             //         client will be taken care of by response
             case SHUTDOWN_ALL:
+                if(flag == 1)
+                   {
+                    // leave the server
+                    sendAMessage(sendMessage,server_address, server_port);
+
+                    // make sure to shutdown the application
+                    return 0;
+
+                   }
+                else
+                   {
+                    printf("ERROR: YOU HAVE NOTE YET JOINED THE SERVER\n"); 
+                   }
                 break;
 
            }
 
         free(note);
+        //free(message);
+        //free(sendMessage);
        }
     
 
    }
 
 
-
-/*
-
-Function: checkJOIN()
-Defintion: This function will check to see if the user has 
-already joined the server
-
-*/
-bool checkJOIN()
-   {
-
-   }
 
 
 /*
@@ -261,3 +306,64 @@ void getMessage(char userInput[100], unsigned char *command, Note *note)
        }
 
    }
+
+/*
+
+FUNCTION: sendMessage
+Description: opens up a socket and sends message to server
+then closes that socket
+
+*/
+
+void sendAMessage(Message sendMessage,char *server_address,char *server_port)
+   {
+    // prepare connection for tcp
+    // this is getting `tested
+
+    int clientSocket;
+    struct sockaddr_in serverAddress;
+
+    // create a socket
+    if ((clientSocket = socket(AF_INET, SOCK_STREAM, 0)) == -1) 
+       {
+        perror("socket creation failed");
+        exit(EXIT_FAILURE);
+       }
+
+    serverAddress.sin_family = AF_INET;
+    serverAddress.sin_addr.s_addr = inet_addr(server_address);
+    serverAddress.sin_port = htons(atoi(server_port));
+
+    if (connect(clientSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) == -1) 
+       {
+        perror("connect failed");
+        exit(EXIT_FAILURE);
+       }
+
+    printf("Connected to server\n");
+
+    send_message(clientSocket, &sendMessage);
+
+
+    // end of connecting to tpc
+    close(clientSocket);   
+
+   }
+
+
+/*
+
+FUNCTION: send_message
+DEFINITION: will send a message to the server
+
+*/
+
+
+void send_message(int socket, const Message *message) {
+    // Serialize the Message struct into a byte array
+    char buffer[sizeof(Message)];
+    memcpy(buffer, message, sizeof(Message));
+
+    // Send the serialized data over the TCP connection
+    send(socket, buffer, sizeof(Message), 0);
+}

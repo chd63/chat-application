@@ -6,6 +6,8 @@
         "fcntl.h": "c",
         "message.h": "c",
         "stdio.h": "c",
-        "reciever_handler.h": "c"
+        "reciever_handler.h": "c",
+        "chat_node.h": "c",
+        "stat.h": "c"
     }
 }

@@ -1,5 +1,12 @@
 #include "main.h"
 
+// was having issues putting this struct in the main.h file
+
+typedef struct thread_arg_struct{
+    int clientSocket;
+    ChatNodes* nodes;
+} ThreadArgs;
+
 // Needs to implement the server loop and be able to read properties
 
 int main()
@@ -52,20 +59,28 @@ int main()
     // get the information from properties
 
 
-    
+    // create an empty list of chat nodes
+    ChatNodes nodes = {.first = NULL, .last = NULL};
 
     // THE SERVER LOOP
     while ( TRUE )
       {
-       //printf("Server is running and waiting for connections...\n");
+  
+       printf("Server is running and waiting for connections...\n");
        // accept connection to client
        int clientSocket = accept( serverSocket, NULL, NULL );
        printf("\nServer with PID %d: accepted client\n", getpid());
 
+       // create the args
+       ThreadArgs args;
+
+       args.clientSocket = clientSocket;
+       args.nodes = &nodes;
+
        // create thread to handle the request
        // we are aware that there are race condition
        pthread_t thread;
-       if (pthread_create(&thread, NULL, talkToClient, (void *)&clientSocket) != 0)
+       if (pthread_create(&thread, NULL, talkToClient, (void *)&args) != 0)
          {
           perror("Error creating thread");
           exit(EXIT_FAILURE);
@@ -77,7 +92,9 @@ int main()
           perror("Error detaching thread");
          exit(EXIT_FAILURE);
          }
+
        
       }
+    freeChatNodes(&nodes);
     
    }

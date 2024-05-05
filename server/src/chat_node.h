@@ -28,6 +28,9 @@ typedef struct chat_node_list_struct
     ChatNodeListElement* last;
    } ChatNodes;
 
+// functions
+void addChatNode(ChatNodes* list, ChatNode node);
 
+void freeChatNodes(ChatNodes* list);
 
 #endif
