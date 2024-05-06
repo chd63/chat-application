@@ -29,21 +29,20 @@ void *talkToClient(void  *arg )
     receive_message(clientSocket, message);
 
     // uncomment for testing of chat nodes
-    printNodes(nodes);
+    //printNodes(nodes);
 
-
-    
     //uncomment for testing
 
+    
     /*
-
     printf("Type: %u\n", message->type);
     printf("Chat Node IP: %u\n", message->chat_node.ip);
     printf("Chat Node Port: %hu\n", message->chat_node.port);
     printf("Chat Node Name: %s\n", message->chat_node.name);
     printf("Note: %s\n", message->note);
-
     */
+
+    
 
 
     // switch statment to choose what will occur
@@ -62,45 +61,37 @@ void *talkToClient(void  *arg )
             sendToAll(threadArgs->nodes, message);
       
             break;
+
+         case LEAVE:
+
+            // need to take the user out of nodes
+            removeChatNode(threadArgs->nodes,  &message->chat_node);
+
+            sendToAll(threadArgs->nodes, message);
+
+            break;
+
+         case SHUTDOWN:
+
+            // take user out of nodes
+            removeChatNode(threadArgs->nodes,  &message->chat_node);
+
+            // switch message to have leave
+            message->type = LEAVE;
+         
+            sendToAll(threadArgs->nodes, message);
+
+            break;
+
+         case SHUTDOWN_ALL:
+
+            // take all users out of nodes
+         
+            sendToAll(threadArgs->nodes, message);
+
+            break;
        }
 
-
-
-    
-    /*
-    switch( message.type )
-      {
-       // ----------------------------
-       case JOIN: 
-       // ----------------------------
-         {
-          int socket_to_chat_node;
-          struct affrinfo hints, *server_info;
-          int error;
-          char portStr[6];
-
-          // protect access to node list
-          pthread_mutex_lock( &mutex_chat_node_list );
-            {
-             // set the type
-             message.type = JOINING;
-
-             ChatNodeListElement* current = chat_nodes->first;
-
-             // run through all nodes
-             while (current->next)
-               {
-                // set info to send note to chat_node
-                memset(&hints, 0, sizeof(hints));
-                hints.ai_socktype = SOCK_STREAM;
-                hints.ai_family = AF_INET;
-                sprintf(portStr, "%u", current->chat_node.port);
-
-               }
-            }
-         }
-      }
-    */
       
     free(message);
    }
@@ -159,10 +150,10 @@ void sendToAll(ChatNodes* nodes,  Message *message)
         printf("Server IP: %u\n", current->chat_node.ip);
         printf("Server Port: %hu\n", current->chat_node.port);
 
-        
-
-        // we should check what user it is 
-        sendAMessage( *message, current->chat_node.ip , current->chat_node.port);
+        //if (current->chat_node.ip != message->chat_node.ip ) {
+            // Send the message to the current user
+            sendAMessage( *message, current->chat_node.ip , current->chat_node.port);
+        //}
 
         current = current->next;
        }
@@ -176,48 +167,52 @@ Description: opens up a socket and sends message to server
 then closes that socket
 
 */
-
-void sendAMessage(Message sendMessage,unsigned int server_address,unsigned short int  server_port)
+void sendAMessage(Message sendMessage, unsigned int server_address, unsigned short int server_port)
    {
-    // prepare connection for tcp
-    // this is getting `tested
 
+    // Create a socket
     int clientSocket;
     struct sockaddr_in serverAddress;
-
-    // create a socket
-    if ((clientSocket = socket(AF_INET, SOCK_STREAM, 0)) == -1) 
-       {
+    
+    if ((clientSocket = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+    {
         perror("socket creation failed");
         exit(EXIT_FAILURE);
-       }
+    }
+    printf("Socket created\n");
 
+    char *server_address_str = inet_ntoa(*(struct in_addr *)&server_address);
+
+    // Prepare server address structure
     serverAddress.sin_family = AF_INET;
-    serverAddress.sin_addr.s_addr = server_address;
-    serverAddress.sin_port = server_port;
+    serverAddress.sin_addr.s_addr = inet_addr(server_address_str);
+    serverAddress.sin_port = htons(server_port);
 
-    if (connect(clientSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) == -1) 
-       {
+    // Connect to the server
+    printf("Connecting to server...\n");
+    if (connect(clientSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) == -1)
+    {
         perror("connect failed");
         exit(EXIT_FAILURE);
-       }
-
+    }
     printf("Connected to server\n");
 
+    // Send the message
     send_message(clientSocket, &sendMessage);
 
-
-    // end of connecting to tpc
-    close(clientSocket);   
-
+    // Close the socket
+    close(clientSocket);
+    printf("Socket closed\n");
    }
 
 
-void send_message(int socket, const Message *message) {
+void send_message(int socket, const Message *message) 
+   {
+
     // Serialize the Message struct into a byte array
     char buffer[sizeof(Message)];
     memcpy(buffer, message, sizeof(Message));
 
     // Send the serialized data over the TCP connection
     send(socket, buffer, sizeof(Message), 0);
-}
+   }

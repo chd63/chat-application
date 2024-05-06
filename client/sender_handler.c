@@ -1,4 +1,5 @@
 #include "main.h"
+#include <stdint.h>
 
 // here you OUTLINE the code of the function that is being executed in the sending thread. 
 // You have to have the main loop in place that processes the different pieces of information 
@@ -23,64 +24,39 @@ void *sendThread(void  *arg )
     Properties *headPtr = (Properties *)arg;
 
     // make sure that we have the server and the port
-    printf("Pointer received in sendThread: %p\n", (void *)headPtr);
+    //printf("Pointer received in sendThread: %p\n", (void *)headPtr);
 
     // get the server address
     char* server_address = property_get_property(headPtr, "serverIP");
 
     // comment over when not testing
-    printf("This is the server address %s \n", server_address);
+    //printf("This is the server address %s \n", server_address);
 
     // get the server port number
     char* server_port = property_get_property(headPtr, "serverPort");
 
     //comment over when not testing
-    printf("This is the port number %s\n", server_port);
+    //printf("This is the port number %s\n", server_port);
 
     // get the users name 
     char* user = property_get_property(headPtr, "clientUsername");
 
     //comment over when not testing
-    printf("This is the user %s\n", user);
+    //printf("This is the user %s\n", user);
 
     // get the client port
     char* client_port = property_get_property(headPtr, "clientPort");
 
     //comment over when not testing
-    printf("This is the user port %s\n", client_port);
+    //printf("This is the user port %s\n", client_port);
 
     // get the client ip
     char* client_ip = property_get_property(headPtr, "clientIP");
 
     //comment over when not testing
-    printf("This is the user ip %s\n", client_ip);
+    //printf("This is the user ip %s\n", client_ip);
 
-
-
-
-
-
-    /*
-    for testing
     
-
-        char userInput[100];
-        unsigned char command;
-        Note *note = calloc(NOTE_LENGTH, sizeof(char));
-
-        // we are waiting for user input
-        printf("Enter: ");
-        fgets(userInput, sizeof(userInput), stdin);
-
-        //printf("This is user input %s\n", userInput);
-
-        // we need get the command and the note from user getMessage
-        getMessage(userInput, &command, note);
-
-    */
-    
-
-
     
     // here we have a loop
     while(true)
@@ -92,7 +68,7 @@ void *sendThread(void  *arg )
         Note *note = calloc(NOTE_LENGTH, sizeof(char)); 
 
         // we are waiting for user input
-        printf("Enter: ");
+        //printf(":");
         fgets(userInput, sizeof(userInput), stdin);
 
         //printf("This is user input %s\n", userInput);
@@ -100,12 +76,17 @@ void *sendThread(void  *arg )
         // we need get the command and the note from user getMessage
         getMessage(userInput, &command, note);
 
+        //printf("This is the user ip %s\n", client_ip);
+
+        // get an unsined int
+        uint32_t ip_int = inet_addr(client_ip);
 
         // let use create a chat node
         ChatNode message;
-        message.ip = strtoul(client_ip, &endptr, 10);;
+        message.ip = ip_int;
         strcpy(message.name, user);
         message.port = atoi(client_port);
+
 
         // make a message
         Message sendMessage;
@@ -164,6 +145,8 @@ void *sendThread(void  *arg )
                    {
                     // leave the server
                     sendAMessage(sendMessage,server_address, server_port);
+
+                    flag = 0;
                    }
                 else
                    {
@@ -182,7 +165,7 @@ void *sendThread(void  *arg )
                     sendAMessage(sendMessage,server_address, server_port);
 
                     // make sure to shutdown the application
-                    return 0;
+                    exit(EXIT_SUCCESS);
 
                    }
                 else
@@ -200,13 +183,16 @@ void *sendThread(void  *arg )
                     sendAMessage(sendMessage,server_address, server_port);
 
                     // make sure to shutdown the application
-                    return 0;
+                    exit(EXIT_SUCCESS);
 
                    }
                 else
                    {
                     printf("ERROR: YOU HAVE NOTE YET JOINED THE SERVER\n"); 
                    }
+                break;
+            default:
+                printf("ERROR: NO COMMAND INPUT\n"); 
                 break;
 
            }
@@ -340,13 +326,13 @@ void sendAMessage(Message sendMessage,char *server_address,char *server_port)
         exit(EXIT_FAILURE);
        }
 
-    printf("Connected to server\n");
 
     send_message(clientSocket, &sendMessage);
 
 
+
     // end of connecting to tpc
-    close(clientSocket);   
+    close(clientSocket);
 
    }
 
@@ -359,11 +345,23 @@ DEFINITION: will send a message to the server
 */
 
 
-void send_message(int socket, const Message *message) {
+void send_message(int socket, const Message *message) 
+   {
     // Serialize the Message struct into a byte array
     char buffer[sizeof(Message)];
     memcpy(buffer, message, sizeof(Message));
 
     // Send the serialized data over the TCP connection
     send(socket, buffer, sizeof(Message), 0);
+   }
+
+
+uint32_t ip_to_int(const char *ip_address) {
+    struct in_addr addr;
+    if (inet_pton(AF_INET, ip_address, &addr) == 1) {
+        return ntohl(addr.s_addr);
+    } else {
+        // Error handling for invalid IP address
+        return 0;
+    }
 }

@@ -29,6 +29,14 @@ int main()
     Properties* properties = property_read_properties(propertyFile);
 
     // bind the socket
+    
+    int opt = 1;
+    if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) 
+       {
+        perror("setsockopt");
+        exit(EXIT_FAILURE);
+       }
+    
 
     // accept IP addresses
     serverAddress.sin_family = AF_INET;    
@@ -76,6 +84,7 @@ int main()
 
        args.clientSocket = clientSocket;
        args.nodes = &nodes;
+       
 
        // create thread to handle the request
        // we are aware that there are race condition

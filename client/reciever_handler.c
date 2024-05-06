@@ -20,13 +20,26 @@ void *receiveThread(void *arg )
        perror("Error creating socket\n");
        exit(EXIT_FAILURE);
       }    
+
+    int opt = 1;
+    if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) 
+       {
+        perror("setsockopt");
+        exit(EXIT_FAILURE);
+       }
+    
     
     serverAddress.sin_family = AF_INET;
 
     serverAddress.sin_addr.s_addr = htonl(INADDR_ANY);
 
+
+
     // uncomment when error checking
     printf("IP address: %s\n", inet_ntoa(serverAddress.sin_addr));
+
+    // set port to listen on
+    //serverAddress.sin_port = htons(9090);
 
     serverAddress.sin_port = htons(atoi(property_get_property(headPtr, "clientPort")));
 
@@ -47,15 +60,17 @@ void *receiveThread(void *arg )
     // server loop
     while (TRUE)
        {
+        //printf("\nWaiting for connections\n");
         // will wait for a responce from the server
         // accept connection to client
         int clientSocket = accept( serverSocket, NULL, NULL );
-        printf("\nServer with PID %d: accepted client\n", getpid());
 
-        pthread_t thread;
+        //pthread_t thread;
+
+        serverFunction(&clientSocket);
 
 
-
+       /*
        if (pthread_create(&thread, NULL, serverFunction, (void *)&clientSocket) != 0)
          {
           perror("Error creating thread");
@@ -70,6 +85,7 @@ void *receiveThread(void *arg )
          }
 
         // will call the server connecting function(switch statment function)
+        */
         
 
        }
@@ -79,14 +95,14 @@ void *receiveThread(void *arg )
 
 
 // server connecting function (called in server loop)
-void *serverFunction(void  *arg)
+void serverFunction(void  *arg)
    { 
-    printf(" WE GET INTO HERE \n\n\n\n\n");
     // get the clientSocket
     int clientSocket = *((int *)arg);
 
     // create a temperary message
-    Message *tempMessage;
+    Message *tempMessage = allocate_message();
+
 
     // call recive_message
     receive_message(clientSocket, tempMessage);
@@ -102,41 +118,44 @@ void *serverFunction(void  *arg)
         // CASE 1: NOTE
         case NOTE:
 
-            printf("%s",tempMessage->chat_node.name);
-            printf("%s\n",tempMessage->note);
+            printf("\033[0;31m%s\033[0m:",tempMessage->chat_node.name);
+            printf("%s",tempMessage->note);
 
             break;
 
         // CASE 2: LEAVE
         case LEAVE:
 
-            printf("%s left\n",tempMessage->chat_node.name);
+            // display someone has left the server
+
+            printf("\033[0;31m%s\033[0m: left",tempMessage->chat_node.name);
         
             break;
 
-            // display someone has left the server
 
         // CASE 3: JOIN 
         case JOIN:
 
-            printf("%s joined the chat\n",tempMessage->chat_node.name);
+            // display someone has joined the server
+
+            printf("\033[0;31m%s\033[0m: joined the chat",tempMessage->chat_node.name);
 
             break;
 
-            // display someone has joined the server
 
         // CASE 4: SHUTDOWN ALL 
 
-            // disaply someone has shutdown the whole server 
-            // shutdown the client
         case SHUTDOWN_ALL:
 
-            printf("%s has shutdown the chat\n",tempMessage->chat_node.name);
-            return 0;
+            // disaply someone has shutdown the whole server 
+
+            printf("\033[0;31m%s\033[0m: has shutdown the chat",tempMessage->chat_node.name);
+            exit(EXIT_SUCCESS);
 
             break;
         
        }
+    free(tempMessage);
 
    }
 
@@ -149,4 +168,16 @@ void receive_message(int socket, Message *message) {
 
     // Deserialize the data back into a Message struct
     memcpy(message, buffer, sizeof(Message));
+}
+
+Message* allocate_message() {
+    // Allocate memory for the Message structure
+    Message *msg = (Message*)malloc(sizeof(Message));
+    if (msg == NULL) {
+        perror("Memory allocation failed");
+        exit(EXIT_FAILURE);
+    }
+    // Initialize the allocated memory (optional, depending on your requirements)
+    // You can initialize the members of the Message structure if necessary
+    return msg;
 }
