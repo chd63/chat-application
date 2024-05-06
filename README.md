@@ -11,3 +11,7 @@ Compile the server by using the command "make client" in the application directo
 ## Problems Compiling?
 
 If you are having issues compiling, then please look in the notes directory, where compile.txt has the commands to compile manually.
+
+## DEMO VIDEO
+
+[DEMO VIDEO](https://youtu.be/hUuOKkWZ5E8)
