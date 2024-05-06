@@ -150,10 +150,11 @@ void sendToAll(ChatNodes* nodes,  Message *message)
         printf("Server IP: %u\n", current->chat_node.ip);
         printf("Server Port: %hu\n", current->chat_node.port);
 
-        //if (current->chat_node.ip != message->chat_node.ip ) {
+        if (current->chat_node.ip != message->chat_node.ip ) 
+           {
             // Send the message to the current user
             sendAMessage( *message, current->chat_node.ip , current->chat_node.port);
-        //}
+           }
 
         current = current->next;
        }
