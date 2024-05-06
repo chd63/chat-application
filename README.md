@@ -12,6 +12,10 @@ Compile the server by using the command "make client" in the application directo
 
 If you are having issues compiling, then please look in the notes directory, where compile.txt has the commands to compile manually.
 
+## HOW DO I CONFIG USERS AND SET UP IP?
+
+To configure the server you will want to change the the information in the test.properties file on both the client and server directories
+
 ## DEMO VIDEO
 
 [DEMO VIDEO](https://youtu.be/hUuOKkWZ5E8)
