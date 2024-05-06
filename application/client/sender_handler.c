@@ -21,7 +21,12 @@ void *sendThread(void  *arg )
     // flag for join
     int flag = 0;
 
-    Properties *headPtr = (Properties *)arg;
+    ThreadData *threadData = (ThreadData*)arg;
+    Properties *headPtr = threadData->head;
+    char *username = threadData->username;
+    unsigned short int port = threadData->port;
+
+
 
     // make sure that we have the server and the port
     //printf("Pointer received in sendThread: %p\n", (void *)headPtr);
@@ -56,6 +61,8 @@ void *sendThread(void  *arg )
     //comment over when not testing
     //printf("This is the user ip %s\n", client_ip);
 
+
+   printf("NOTE: FOR EACH COMMAND YOU USE MAKE SURE TO HAVE A SPACE AFTER THE COMMAND\n");
     
     
     // here we have a loop
@@ -68,7 +75,7 @@ void *sendThread(void  *arg )
         Note *note = calloc(NOTE_LENGTH, sizeof(char)); 
 
         // we are waiting for user input
-        //printf(":");
+        //printf("\033[0;31m%s\033[0m:",username);
         fgets(userInput, sizeof(userInput), stdin);
 
         //printf("This is user input %s\n", userInput);
@@ -84,8 +91,8 @@ void *sendThread(void  *arg )
         // let use create a chat node
         ChatNode message;
         message.ip = ip_int;
-        strcpy(message.name, user);
-        message.port = atoi(client_port);
+        strcpy(message.name, username);
+        message.port = port;
 
 
         // make a message
@@ -260,7 +267,7 @@ void getMessage(char userInput[100], unsigned char *command, Note *note)
        
        }
 
-    
+    // check to see if string is a command
 
 
     // uncomment to test
@@ -286,9 +293,20 @@ void getMessage(char userInput[100], unsigned char *command, Note *note)
        {
         *command = SHUTDOWN_ALL;
        }
-    else if(strcmp(strCommand, "NOTE") == 0 )
+    else 
        {
         *command = NOTE;
+
+        char temp[64];
+
+        strcpy(temp, strCommand);
+
+        strcat(temp, " ");
+
+        strcat(temp, *note);
+
+        strcpy(*note, temp);
+
        }
 
    }

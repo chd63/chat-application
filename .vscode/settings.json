@@ -8,6 +8,7 @@
         "stdio.h": "c",
         "reciever_handler.h": "c",
         "chat_node.h": "c",
-        "stat.h": "c"
+        "stat.h": "c",
+        "sender_handler.h": "c"
     }
 }

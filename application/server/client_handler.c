@@ -28,10 +28,9 @@ void *talkToClient(void  *arg )
 
     receive_message(clientSocket, message);
 
-    // uncomment for testing of chat nodes
-    //printNodes(nodes);
 
     //uncomment for testing
+
 
     
     /*
@@ -85,14 +84,19 @@ void *talkToClient(void  *arg )
 
          case SHUTDOWN_ALL:
 
-            // take all users out of nodes
-         
             sendToAll(threadArgs->nodes, message);
+
+            // take all users out of nodes
+            freeChatNodes(threadArgs->nodes);
+
+            exit(EXIT_SUCCESS);
+         
 
             break;
        }
 
-      
+    printNodes(threadArgs->nodes);
+    
     free(message);
    }
 
@@ -150,9 +154,9 @@ void sendToAll(ChatNodes* nodes,  Message *message)
         printf("Server IP: %u\n", current->chat_node.ip);
         printf("Server Port: %hu\n", current->chat_node.port);
 
-        if (current->chat_node.ip != message->chat_node.ip ) 
+        if ( strcmp(current->chat_node.name, message->chat_node.name ) != 0 ) 
            {
-            // Send the message to the current user
+             //Send the message to the current user
             sendAMessage( *message, current->chat_node.ip , current->chat_node.port);
            }
 
@@ -187,7 +191,7 @@ void sendAMessage(Message sendMessage, unsigned int server_address, unsigned sho
     // Prepare server address structure
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_addr.s_addr = inet_addr(server_address_str);
-    serverAddress.sin_port = htons(server_port);
+    serverAddress.sin_port = server_port;
 
     // Connect to the server
     printf("Connecting to server...\n");

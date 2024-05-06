@@ -22,6 +22,13 @@
 #include "sender_handler.h"
 #include "src/message.h"
 
+// Define the structure
+typedef struct {
+    char username[16];
+    Properties* head;
+    unsigned short int port;
+} ThreadData;
+
 
 
 #define SERVER_ADDRESS "23.254.211.151"   // the server IP

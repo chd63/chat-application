@@ -1,5 +1,7 @@
 #include "main.h"
 
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
 // was having issues putting this struct in the main.h file
 
 typedef struct thread_arg_struct{
@@ -68,11 +70,15 @@ int main()
 
 
     // create an empty list of chat nodes
-    ChatNodes nodes = {.first = NULL, .last = NULL};
+    ChatNodes *nodes = (ChatNodes *)malloc(sizeof(ChatNodes));
+    nodes->first = NULL;
+    nodes->last = NULL;
 
     // THE SERVER LOOP
     while ( TRUE )
       {
+
+       //pthread_mutex_lock(&mutex);
   
        printf("Server is running and waiting for connections...\n");
        // accept connection to client
@@ -83,7 +89,7 @@ int main()
        ThreadArgs args;
 
        args.clientSocket = clientSocket;
-       args.nodes = &nodes;
+       args.nodes = nodes;
        
 
        // create thread to handle the request
@@ -99,11 +105,13 @@ int main()
        if (pthread_detach(thread) !=0)
          {
           perror("Error detaching thread");
-         exit(EXIT_FAILURE);
+          exit(EXIT_FAILURE);
          }
+
+       //pthread_mutex_unlock(&mutex);
 
        
       }
-    freeChatNodes(&nodes);
+    freeChatNodes(nodes);
     
    }
