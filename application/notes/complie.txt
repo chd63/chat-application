@@ -2,7 +2,7 @@ server: gcc client_handler.c src/chat_node.c src/message.c src/properties.c main
 
 client: gcc reciever_handler.c sender_handler.c src/chat_node.c src/message.c src/properties.c main.c -o client-main
 
-send to server: scp -r -P 22343 /home/dev/chat-application/server dev@23.254.211.151:
+send to server: scp -r -P 22343 /home/dev/chat-application/application/server dev@23.254.211.151:
 
-send to client: scp -r /home/dev/chat-application/client root@23.254.209.156:
+send to client: scp -r /home/dev/chat-application/application/client root@23.254.209.156:
 

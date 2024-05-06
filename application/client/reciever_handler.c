@@ -7,10 +7,15 @@
 // points for the different kinds of messages that can be received from the server.
 
 // server loop function called receiveThread gets a Proprties pointer passed in
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void *receiveThread(void *arg )
    {
-    Properties *headPtr = (Properties *)arg;
+
+    ThreadData *threadData = (ThreadData*)arg;
+    Properties *headPtr = threadData->head;
+    char *username = threadData->username;
+    unsigned short int port = threadData->port;
     
     int serverSocket;
     struct sockaddr_in serverAddress;
@@ -36,12 +41,12 @@ void *receiveThread(void *arg )
 
 
     // uncomment when error checking
-    printf("IP address: %s\n", inet_ntoa(serverAddress.sin_addr));
+    //printf("IP address: %s\n", inet_ntoa(serverAddress.sin_addr));
 
     // set port to listen on
     //serverAddress.sin_port = htons(9090);
 
-    serverAddress.sin_port = htons(atoi(property_get_property(headPtr, "clientPort")));
+    serverAddress.sin_port = port;
 
 
     if (bind( serverSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress) ) != 0)
@@ -60,6 +65,8 @@ void *receiveThread(void *arg )
     // server loop
     while (TRUE)
        {
+        //pthread_mutex_lock(&mutex);
+
         //printf("\nWaiting for connections\n");
         // will wait for a responce from the server
         // accept connection to client
@@ -70,42 +77,45 @@ void *receiveThread(void *arg )
         serverFunction(&clientSocket);
 
 
-       /*
-       if (pthread_create(&thread, NULL, serverFunction, (void *)&clientSocket) != 0)
-         {
-          perror("Error creating thread");
-          exit(EXIT_FAILURE);
-         }
 
-       // detach the thread
-       if (pthread_detach(thread) !=0)
-         {
-          perror("Error detaching thread");
-         exit(EXIT_FAILURE);
-         }
+        //pthread_mutex_unlock(&mutex);
 
-        // will call the server connecting function(switch statment function)
-        */
-        
+        close(clientSocket);
 
        }
      
-
+    close(serverSocket);
    }
 
 
 // server connecting function (called in server loop)
 void serverFunction(void  *arg)
    { 
+    //pthread_mutex_lock(&mutex);
+
     // get the clientSocket
-    int clientSocket = *((int *)arg);
+    int clientSocket = *(int *)arg;
 
     // create a temperary message
-    Message *tempMessage = allocate_message();
+    Message *tempMessage = (Message *)malloc(sizeof(Message));
 
 
     // call recive_message
     receive_message(clientSocket, tempMessage);
+
+
+    /*
+        
+    printf("Type: %u\n", tempMessage->type);
+    printf("Chat Node IP: %u\n", tempMessage->chat_node.ip);
+    printf("Chat Node Port: %hu\n", tempMessage->chat_node.port);
+    printf("Chat Node Name: %s\n", tempMessage->chat_node.name);
+    printf("Note: %s\n", tempMessage->note);
+    
+
+    printf("do we get to this point");
+
+    */
 
 
     // switch statment 
@@ -128,7 +138,7 @@ void serverFunction(void  *arg)
 
             // display someone has left the server
 
-            printf("\033[0;31m%s\033[0m: left",tempMessage->chat_node.name);
+            printf("\033[0;31m%s\033[0m left\n",tempMessage->chat_node.name);
         
             break;
 
@@ -138,7 +148,7 @@ void serverFunction(void  *arg)
 
             // display someone has joined the server
 
-            printf("\033[0;31m%s\033[0m: joined the chat",tempMessage->chat_node.name);
+            printf("\033[0;31m%s\033[0m joined the chat\n",tempMessage->chat_node.name);
 
             break;
 
@@ -149,13 +159,15 @@ void serverFunction(void  *arg)
 
             // disaply someone has shutdown the whole server 
 
-            printf("\033[0;31m%s\033[0m: has shutdown the chat",tempMessage->chat_node.name);
+            printf("\033[0;31m%s\033[0m has shutdown the chat\n",tempMessage->chat_node.name);
             exit(EXIT_SUCCESS);
 
             break;
         
        }
     free(tempMessage);
+
+    //pthread_mutex_unlock(&mutex);
 
    }
 
@@ -170,14 +182,3 @@ void receive_message(int socket, Message *message) {
     memcpy(message, buffer, sizeof(Message));
 }
 
-Message* allocate_message() {
-    // Allocate memory for the Message structure
-    Message *msg = (Message*)malloc(sizeof(Message));
-    if (msg == NULL) {
-        perror("Memory allocation failed");
-        exit(EXIT_FAILURE);
-    }
-    // Initialize the allocated memory (optional, depending on your requirements)
-    // You can initialize the members of the Message structure if necessary
-    return msg;
-}
