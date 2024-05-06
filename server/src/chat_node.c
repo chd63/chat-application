@@ -30,6 +30,44 @@ void addChatNode(ChatNodes* list, ChatNode node)
        }
    }
 
+void removeChatNode(ChatNodes* list, const ChatNode* node)
+   {
+    ChatNodeListElement *current = list->first;
+    ChatNodeListElement *prev = NULL;
+
+    while (current != NULL) {
+        if (current->chat_node.ip == node->ip &&
+            current->chat_node.port == node->port &&
+            strcmp(current->chat_node.name, node->name) == 0) {
+            // Found the node to remove
+            if (prev == NULL) 
+               {
+                // If it's the first node
+                list->first = current->next;
+                if (list->first == NULL) 
+                   {
+                    // If there's only one node in the list
+                    list->last = NULL;
+                   }
+               } 
+            else 
+               {
+                prev->next = current->next;
+                if (current->next == NULL) 
+                   {
+                    // If it's the last node
+                    list->last = prev;
+                   }
+               }
+            // Free the memory of the removed node
+            free(current);
+            return;
+        }
+        // Move to the next node
+        prev = current;
+        current = current->next;
+    }
+}
 
 void freeChatNodes(ChatNodes* list)
    {

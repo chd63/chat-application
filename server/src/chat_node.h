@@ -33,4 +33,6 @@ void addChatNode(ChatNodes* list, ChatNode node);
 
 void freeChatNodes(ChatNodes* list);
 
+void removeChatNode(ChatNodes* list, const ChatNode* node);
+
 #endif

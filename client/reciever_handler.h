@@ -3,4 +3,6 @@
 void *receiveThread(void  *arg );
 void receive_message(int socket, Message *message);
 
-void *serverFunction(void  *arg);
+void serverFunction(void  *arg);
+
+Message* allocate_message();
